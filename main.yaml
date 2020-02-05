@@ -1,0 +1,424 @@
+---
+openapi: 3.0.2
+info:
+  title: Letter Of Credit (OpenAPI 3.0)
+  version: 1.0.0
+  description: The Letter of Credit API allows the public user to place a new import/export
+    letters.
+  contact:
+    name: Bram Bergshoeff
+    url: https://rabobank.com/
+    email: Bram.Bergshoeff@rabobank.com
+paths:
+  /clients/{clientId}/lettersOfCredit:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LetterOfCredit'
+        required: true
+      tags:
+      - LC
+      - businessAPI
+      responses:
+        "201":
+          headers:
+            Content-Location:
+              $ref: '#/components/headers/Content-Location'
+          description: Resource created.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                "400":
+                  value:
+                    errors:
+                    - errorCode: 400
+                      errorStatus: "2000400"
+                      errorDetail: Validation failed on ... !
+                      invalidParams:
+                      - name: currency
+                        reason: Missing.
+          description: Input missing / Validation failed.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                "401 Error":
+                  value:
+                    errors:
+                    - errorCode: 401
+                      errorStatus: "2000401"
+                      errorDetail: Authorization failed.
+                      invalidParams: []
+          description: Not authorized.
+        "405":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                "405 Error":
+                  value:
+                    errors:
+                    - errorCode: 405
+                      errorStatus: "2000400"
+                      errorDetail: Method not available
+                      invalidParams: []
+          description: Method Not Allowed
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                "406":
+                  value:
+                    errors:
+                    - errorCode: 406
+                      errorStatus: "2000406"
+                      errorDetail: Invalid input.
+                      invalidParams:
+                      - name: version
+                        reason: Not available.
+          description: Returned if version or response content type isn't available.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                "500 Error":
+                  value:
+                    errors:
+                    - errorCode: 500
+                      errorStatus: "2000500"
+                      errorDetail: Server error! Please try again.
+                      invalidParams: []
+          description: Internal Server Error - error during prozessing of request
+        "100": {}
+      summary: Creation of a import LC resource
+    parameters:
+    - examples:
+        Client UUID:
+          value: 24e67f63-5b9a-4c71-b206-d1e5511f7037
+      name: clientId
+      description: UUID of an GCDS contact
+      schema:
+        type: string
+      in: path
+      required: true
+    - examples:
+        Accept Header Example:
+          value: application/json;version=1.0.0
+      name: Accept
+      description: Expected response content type and version.
+      schema:
+        type: string
+      in: header
+      required: true
+    - examples:
+        Content-Type Example:
+          value: appication/json
+      name: Content-Type
+      description: Requested content type.
+      schema:
+        type: string
+      in: header
+      required: true
+    - examples:
+        X-MSGID:
+          value: WORKFLOW_WorkflowUser_123456789_1514764799
+      name: X-MSGID
+      description: external identifier that is handed over to FCUBS for traceability
+      schema:
+        type: string
+      in: header
+      required: true
+  /clients/{clientId}/lettersOfCredit/{contractreferencenumber}:
+    get:
+      tags:
+      - LC
+      - businessAPI
+      summary: Get details of an letter of credit
+    patch:
+      tags:
+      - LC
+      - businessAPI
+      responses:
+        "200":
+          description: Import LC was updated successfully.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                "400":
+                  value:
+                    errors:
+                    - errorCode: 400
+                      errorStatus: "2000400"
+                      errorDetail: Validation failed on ... !
+                      invalidParams:
+                      - name: currency
+                        reason: Missing.
+          description: Input missing / Validation failed.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                "401 Error":
+                  value:
+                    errors:
+                    - errorCode: 401
+                      errorStatus: "2000401"
+                      errorDetail: Authorization failed.
+                      invalidParams: []
+          description: Not authorized.
+        "404":
+          content:
+            application/json:
+              schema:
+                type: string
+              examples:
+                "404 Error":
+                  value:
+                    errors:
+                    - errorCode: 404
+                      errorStatus: "2000404"
+                      errorDetail: No contract found for this client
+                      invalidParams:
+                      - name: contractreferencenumber
+                        reason: Not available.
+          description: Resource not found.
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                "406":
+                  value:
+                    errors:
+                    - errorCode: 406
+                      errorStatus: "2000406"
+                      errorDetail: Invalid input.
+                      invalidParams:
+                      - name: version
+                        reason: Not available.
+          description: Returned if version or response content type isn't available.
+        "500":
+          content:
+            application/json:
+              schema:
+                type: string
+              examples:
+                "500 Error":
+                  value:
+                    errors:
+                    - errorCode: 500
+                      errorStatus: "2000500"
+                      errorDetail: Server error! Please try again.
+                      invalidParams: []
+          description: Internal Server Error - error during prozessing of request
+      summary: Modiy a import LC
+    parameters:
+    - examples:
+        Client UUID:
+          value: "24e67f63-5b9a-4c71-b206-d1e5511f7037\t\r\n"
+      name: clientId
+      description: UUID of an GCDS contact
+      schema:
+        type: string
+      in: path
+      required: true
+    - examples:
+        Import LC UUID:
+          value: 5cdb034c-f67f-453f-9ae8-b125c3d64372
+      name: contractreferencenumber
+      description: UUID of an existing import LC
+      schema:
+        type: string
+      in: path
+      required: true
+    - examples:
+        Accept Header Example:
+          value: application/json;version=1.0.0
+      name: Accept
+      description: Expected response content type and version.
+      schema:
+        type: string
+      in: header
+      required: true
+    - examples:
+        Content-Type Example:
+          value: appication/json
+      name: Content-Type
+      description: Requested content type.
+      schema:
+        type: string
+      in: header
+      required: true
+    - examples:
+        X-MSGID:
+          value: WORKFLOW_WorkflowUser_123456789_1514764799
+      name: X-MSGID
+      description: external identifier that is handed over to FCUBS for traceability
+      schema:
+        type: string
+      in: header
+      required: true
+components:
+  schemas:
+    Error:
+      description: Error and Exception reprensentation.
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              errorStatus:
+                description: System internal error code.
+                type: string
+              errorCode:
+                format: int32
+                description: Http status code.
+                type: integer
+              errorDetail:
+                description: Enriched error description for the enduser
+                type: string
+              invalidParams:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      description: Name of the invalid attribute
+                      type: string
+                    reason:
+                      description: Error description for the attribute
+                      type: string
+      example:
+        errors:
+        - errorCode: 404
+          errorStatus: "200045"
+          errorDetail: Validation failed on ... !
+          invalidParams:
+          - name: referenceId
+            reason: Missing.
+    LetterOfCredit:
+      title: ImportLetterOfCredit
+      description: ImportLetterOfCredit
+      required:
+      - amount
+      - currency
+      - productCode
+      - productType
+      - issueAt
+      - expiryAt
+      - shipment
+      type: object
+      properties:
+        currency:
+          description: Assiged currency to the amount
+          maxLength: 3
+          minLength: 3
+          pattern: '[A-Z]{3}'
+          type: string
+        amount:
+          format: double
+          description: Letter of credit amount
+          type: number
+        productCode:
+          description: |-
+            ML01 - "Import LC issuance - Non Revolving - Commission in advance"
+            or
+            Ml02 - "Import LC issuance - Non Revolving - Commission in arrears"
+          maxLength: 3
+          minLength: 3
+          pattern: '[A-Z0-9]{3}'
+          enum:
+          - ML01
+          - ML02
+          type: string
+        productType:
+          description: |-
+            I - "Import letter"
+            E - "Export letter"
+          maxLength: 1
+          minLength: 1
+          enum:
+          - I
+          - E
+          type: string
+        issueAt:
+          format: date-time
+          description: |-
+            The letter of credit issue date.
+            ISO8601 based date format.
+          type: string
+        expiryAt:
+          format: date-time
+          description: "Specify the expiry date for the facility. If the limit amount\
+            \ assigned to the facility is not utilized within the specified expiry\
+            \ date then the Available check box will remain un-selected. This freezes\
+            \ the line for the respective liability. \r\nISO8601 based date format."
+          type: string
+        shipment:
+          $ref: '#/components/schemas/Shipment'
+          description: Shipment details of letter of credit.
+      example:
+        product: ML01
+        currency: EUR
+        amount: 4.400000053E7
+        issueAt: 2019-12-16T16:06:05Z
+        expiryAt: 2020-05-30T16:06:05Z
+        productCode: ML01
+        productType: I
+        shipment:
+          partial: false
+    Shipment:
+      description: ""
+      required:
+      - partial
+      type: object
+      properties:
+        partial:
+          description: "Indicate if partial shipment is allowed \r\n"
+          type: boolean
+      example:
+        partial: false
+  responses:
+    Error:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            Error response example:
+              value:
+                errors:
+                - errorCode: 404
+                  errorDetail: Validation failed on ... !
+      description: Defines how errors are handled and returned.
+  headers:
+    Content-Location:
+      schema:
+        type: string
+      example: /contacts/90fd3870-75d6-4eb8-ae6d-2216f201c28f/importLettersOfCredit/90fd3870-75d6-4eb8-ae6d-2216f201c28f
+      description: Path to the created resource.
+tags:
+- name: businessAPI
+  description: API designed for business needs.
+- name: LC
+  description: Letter of Credit
