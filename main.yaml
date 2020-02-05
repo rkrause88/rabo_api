@@ -419,6 +419,8 @@ components:
       description: Path to the created resource.
 tags:
 - name: businessAPI
-  description: API designed for business needs.
+  description: |-
+    API designed for business needs.
+    Active case: Komgo
 - name: LC
   description: Letter of Credit
