@@ -101,7 +101,6 @@ paths:
                       errorDetail: Server error! Please try again.
                       invalidParams: []
           description: Internal Server Error - error during prozessing of request
-        "100": {}
       summary: Creation of a import LC resource
     parameters:
     - examples:
@@ -145,6 +144,20 @@ paths:
       tags:
       - LC
       - businessAPI
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LetterOfCreditResponse'
+              examples:
+                GetResponseLetterOfCredit:
+                  value:
+                    productType: I
+                    product: ML01
+                    currency: EUR
+                    amount: 4.400000053E7
+          description: Provide the letter of credit resource.
       summary: Get details of an letter of credit
     patch:
       tags:
@@ -324,8 +337,8 @@ components:
       - currency
       - productCode
       - productType
-      - issueAt
-      - expiryAt
+      - issuedAt
+      - expiredAt
       - shipment
       type: object
       properties:
@@ -361,43 +374,123 @@ components:
           - I
           - E
           type: string
-        issueAt:
-          format: date-time
-          description: |-
-            The letter of credit issue date.
-            ISO8601 based date format.
-          type: string
-        expiryAt:
+        shipment:
+          $ref: '#/components/schemas/Shipment'
+          description: Shipment details of letter of credit.
+        expiredAt:
           format: date-time
           description: "Specify the expiry date for the facility. If the limit amount\
             \ assigned to the facility is not utilized within the specified expiry\
             \ date then the Available check box will remain un-selected. This freezes\
             \ the line for the respective liability. \r\nISO8601 based date format."
           type: string
-        shipment:
-          $ref: '#/components/schemas/Shipment'
-          description: Shipment details of letter of credit.
+        issuedAt:
+          format: date-time
+          description: |-
+            The letter of credit issue date.
+            ISO8601 based date format.
+          type: string
       example:
+        productType: I
         product: ML01
         currency: EUR
         amount: 4.400000053E7
-        issueAt: 2019-12-16T16:06:05Z
-        expiryAt: 2020-05-30T16:06:05Z
+        issuedAt: 2019-12-16T16:06:05Z
+        expiredAt: 2020-05-30T16:06:05Z
         productCode: ML01
-        productType: I
         shipment:
-          partial: false
+          from: Rio de Janeiro
+          to: Hamburg
+          partial: true
+          transferable: true
+          period: comment ...
     Shipment:
       description: ""
       required:
-      - partial
+      - latestShipmentAt
+      - period
       type: object
       properties:
-        partial:
-          description: "Indicate if partial shipment is allowed \r\n"
+        transferable:
+          description: |-
+            Indicates if an transferable shipment is allowed.
+            (Default: true)
+          default: true
           type: boolean
+        partial:
+          description: "Indicates if partial shipment is allowed \r\n(Default: true)"
+          default: true
+          type: boolean
+        from:
+          description: Place of taking in Charge / Place of receipt
+          maxLength: 65
+          type: string
+        to:
+          description: Place of final destination / Place of delivery
+          maxLength: 65
+          type: string
+        latestShipmentAt:
+          format: date-time
+          description: Latest point in time for the shipment.
+          type: string
+        period:
+          description: Shipment period
+          maxLength: 395
+          type: string
+        loadingPort:
+          description: Airport of loading
+          maxLength: 65
+          type: string
+        dischargePort:
+          description: Airport to discharge
+          maxLength: 65
+          type: string
       example:
-        partial: false
+        from: Rio de Janeiro
+        to: Hamburg
+        partial: true
+        transferable: true
+        period: comment ...
+    LetterOfCreditResponse:
+      title: Root Type for LetterOfCreditResponse
+      description: ""
+      required:
+      - productType
+      - product
+      - currency
+      - amount
+      - expiredAt
+      - authorized
+      type: object
+      properties:
+        productType:
+          description: ""
+          enum: []
+          type: string
+        product:
+          description: ""
+          enum: []
+          type: string
+        currency:
+          description: ""
+          type: string
+        amount:
+          description: ""
+          type: string
+        authorized:
+          description: ""
+          type: boolean
+        expiredAt:
+          format: date-time
+          description: ""
+          type: string
+      example:
+        productType: I
+        product: ML01
+        currency: EUR
+        amount: 4.400000053E7
+        expiredAt: 2020-05-30T16:06:05Z
+        authorized: true
   responses:
     Error:
       content:
