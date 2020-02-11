@@ -113,24 +113,6 @@ paths:
       in: path
       required: true
     - examples:
-        Accept Header Example:
-          value: application/json;version=1.0.0
-      name: Accept
-      description: Expected response content type and version.
-      schema:
-        type: string
-      in: header
-      required: true
-    - examples:
-        Content-Type Example:
-          value: appication/json
-      name: Content-Type
-      description: Requested content type.
-      schema:
-        type: string
-      in: header
-      required: true
-    - examples:
         X-MSGID:
           value: WORKFLOW_WorkflowUser_123456789_1514764799
       name: X-MSGID
@@ -150,14 +132,69 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LetterOfCreditResponse'
-              examples:
-                GetResponseLetterOfCredit:
-                  value:
-                    productType: I
-                    product: ML01
-                    currency: EUR
-                    amount: 4.400000053E7
           description: Provide the letter of credit resource.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                "401 Error":
+                  value:
+                    errors:
+                    - errorCode: 401
+                      errorStatus: "2000401"
+                      errorDetail: Authorization failed.
+                      invalidParams: []
+          description: Not authorized.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                "405 Error":
+                  value:
+                    errors:
+                    - errorCode: 404
+                      errorStatus: "2000404"
+                      errorDetail: Letter of credit not found.
+                      invalidParams: []
+          description: Resource not found.
+        "405":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                "405 Error":
+                  value:
+                    errors:
+                    - errorCode: 405
+                      errorStatus: "2000400"
+                      errorDetail: Method not available
+                      invalidParams: []
+          description: Method Not Allowed
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Requested media type not supported.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                "500 Error":
+                  value:
+                    errors:
+                    - errorCode: 500
+                      errorStatus: "2000500"
+                      errorDetail: Server error! Please try again.
+                      invalidParams: []
+          description: Internal Server Error - error during prozessing of request
       summary: Get details of an letter of credit
     patch:
       tags:
@@ -242,7 +279,7 @@ paths:
                       errorDetail: Server error! Please try again.
                       invalidParams: []
           description: Internal Server Error - error during prozessing of request
-      summary: Modiy a import LC
+      summary: Modiy a letter of credit
     parameters:
     - examples:
         Client UUID:
@@ -261,24 +298,6 @@ paths:
       schema:
         type: string
       in: path
-      required: true
-    - examples:
-        Accept Header Example:
-          value: application/json;version=1.0.0
-      name: Accept
-      description: Expected response content type and version.
-      schema:
-        type: string
-      in: header
-      required: true
-    - examples:
-        Content-Type Example:
-          value: appication/json
-      name: Content-Type
-      description: Requested content type.
-      schema:
-        type: string
-      in: header
       required: true
     - examples:
         X-MSGID:
