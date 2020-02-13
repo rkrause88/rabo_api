@@ -313,6 +313,7 @@ components:
       - expired_at
       - shipment
       - participants
+      - goods
       type: object
       properties:
         currency:
@@ -369,6 +370,11 @@ components:
         participants:
           $ref: '#/components/schemas/Participants'
           description: Information of engaged trade parties.
+        goods:
+          description: List of shiped goods
+          type: array
+          items:
+            $ref: '#/components/schemas/Good'
       example:
         product_type: I
         product: ML01
@@ -387,6 +393,10 @@ components:
           advising_bank: Cooperatieve Rabobank
           beneficiary: TRADE CUST 01
           applicant: TRADE CUST 02
+        goods:
+        - description: Crude oil - 2Bseen
+          units: 10 BBL
+          unitPrice: 55.4
     Shipment:
       description: ""
       required:
@@ -552,6 +562,22 @@ components:
           advising_bank: Cooperatieve Rabobank
           beneficiary: TRADE CUST 01
           applicant: TRADE CUST 02
+    Good:
+      title: Root Type for Good
+      description: 'Detailed information about a shipment of a single good '
+      type: object
+      properties:
+        description:
+          type: string
+        units:
+          type: string
+        unitPrice:
+          format: double
+          type: number
+      example:
+        description: Crude oil - 2Bseen
+        units: 10 BBL
+        unitPrice: 55.4
   headers:
     Content-Location:
       schema:
