@@ -9,6 +9,9 @@ info:
     name: Bram Bergshoeff
     url: https://rabobank.com/
     email: Bram.Bergshoeff@rabobank.com
+servers:
+- url: https://rabobank.com/
+  description: Rabobank production system
 paths:
   /clients/{clientId}/lettersOfCredit:
     post:
