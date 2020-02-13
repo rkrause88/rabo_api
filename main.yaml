@@ -2,7 +2,7 @@
 openapi: 3.0.2
 info:
   title: Letter Of Credit (OpenAPI 3.0)
-  version: 1.0.0
+  version: 0.5.0
   description: The Letter of Credit API allows the public user to place a new import/export
     letters.
   contact:
@@ -71,21 +71,7 @@ paths:
                       errorDetail: Method not available
                       invalidParams: []
           description: Method Not Allowed
-        "406":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                "406":
-                  value:
-                    errors:
-                    - errorCode: 406
-                      errorStatus: "2000406"
-                      errorDetail: Invalid input.
-                      invalidParams:
-                      - name: version
-                        reason: Not available.
+        "415":
           description: Returned if version or response content type isn't available.
         "500":
           content:
@@ -249,21 +235,21 @@ paths:
                       - name: contractreferencenumber
                         reason: Not available.
           description: Resource not found.
-        "406":
+        "405":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
               examples:
-                "406":
+                "405 Error":
                   value:
                     errors:
-                    - errorCode: 406
-                      errorStatus: "2000406"
-                      errorDetail: Invalid input.
-                      invalidParams:
-                      - name: version
-                        reason: Not available.
+                    - errorCode: 405
+                      errorStatus: "2000400"
+                      errorDetail: Method not available
+                      invalidParams: []
+          description: Method Not Allowed
+        "415":
           description: Returned if version or response content type isn't available.
         "500":
           content:
@@ -310,54 +296,16 @@ paths:
       required: true
 components:
   schemas:
-    Error:
-      description: Error and Exception reprensentation.
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            type: object
-            properties:
-              errorStatus:
-                description: System internal error code.
-                type: string
-              errorCode:
-                format: int32
-                description: Http status code.
-                type: integer
-              errorDetail:
-                description: Enriched error description for the enduser
-                type: string
-              invalidParams:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
-                      description: Name of the invalid attribute
-                      type: string
-                    reason:
-                      description: Error description for the attribute
-                      type: string
-      example:
-        errors:
-        - errorCode: 404
-          errorStatus: "200045"
-          errorDetail: Validation failed on ... !
-          invalidParams:
-          - name: referenceId
-            reason: Missing.
     LetterOfCredit:
       title: ImportLetterOfCredit
       description: ImportLetterOfCredit
       required:
       - amount
       - currency
-      - productCode
-      - productType
-      - issuedAt
-      - expiredAt
+      - product_code
+      - product_type
+      - issued_at
+      - expired_at
       - shipment
       type: object
       properties:
@@ -371,7 +319,7 @@ components:
           format: double
           description: Letter of credit amount
           type: number
-        productCode:
+        product_code:
           description: |-
             ML01 - "Import LC issuance - Non Revolving - Commission in advance"
             or
@@ -383,7 +331,7 @@ components:
           - ML01
           - ML02
           type: string
-        productType:
+        product_type:
           description: |-
             I - "Import letter"
             E - "Export letter"
@@ -396,37 +344,77 @@ components:
         shipment:
           $ref: '#/components/schemas/Shipment'
           description: Shipment details of letter of credit.
-        expiredAt:
+        expired_at:
           format: date-time
           description: "Specify the expiry date for the facility. If the limit amount\
             \ assigned to the facility is not utilized within the specified expiry\
             \ date then the Available check box will remain un-selected. This freezes\
             \ the line for the respective liability. \r\nISO8601 based date format."
           type: string
-        issuedAt:
+        issued_at:
           format: date-time
           description: |-
             The letter of credit issue date.
             ISO8601 based date format.
           type: string
       example:
-        productType: I
+        product_type: I
         product: ML01
         currency: EUR
         amount: 4.400000053E7
-        issuedAt: 2019-12-16T16:06:05Z
-        expiredAt: 2020-05-30T16:06:05Z
-        productCode: ML01
+        issued_at: 2019-12-16T16:06:05Z
+        expired_at: 2020-05-30T16:06:05Z
+        product_code: ML01
         shipment:
           from: Rio de Janeiro
           to: Hamburg
           partial: true
           transferable: true
           period: comment ...
+    LetterOfCreditResponse:
+      title: Root Type for LetterOfCreditResponse
+      description: ""
+      required:
+      - product_type
+      - product
+      - currency
+      - amount
+      - expired_at
+      - authorized
+      type: object
+      properties:
+        product_type:
+          description: ""
+          enum: []
+          type: string
+        product:
+          description: ""
+          enum: []
+          type: string
+        currency:
+          description: ""
+          type: string
+        amount:
+          description: ""
+          type: string
+        authorized:
+          description: ""
+          type: boolean
+        expired_at:
+          format: date-time
+          description: ""
+          type: string
+      example:
+        product_type: I
+        product: ML01
+        currency: EUR
+        amount: 4.400000053E7
+        expired_at: 2020-05-30T16:06:05Z
+        authorized: true
     Shipment:
       description: ""
       required:
-      - latestShipmentAt
+      - latest_shipment_at
       - period
       type: object
       properties:
@@ -448,7 +436,7 @@ components:
           description: Place of final destination / Place of delivery
           maxLength: 65
           type: string
-        latestShipmentAt:
+        latest_shipment_at:
           format: date-time
           description: Latest point in time for the shipment.
           type: string
@@ -456,11 +444,11 @@ components:
           description: Shipment period
           maxLength: 395
           type: string
-        loadingPort:
+        loading_port:
           description: Airport of loading
           maxLength: 65
           type: string
-        dischargePort:
+        discharge_port:
           description: Airport to discharge
           maxLength: 65
           type: string
@@ -470,46 +458,30 @@ components:
         partial: true
         transferable: true
         period: comment ...
-    LetterOfCreditResponse:
-      title: Root Type for LetterOfCreditResponse
-      description: ""
-      required:
-      - productType
-      - product
-      - currency
-      - amount
-      - expiredAt
-      - authorized
+    Error:
+      description: Error and Exception reprensentation.
       type: object
       properties:
-        productType:
-          description: ""
-          enum: []
-          type: string
-        product:
-          description: ""
-          enum: []
-          type: string
-        currency:
-          description: ""
-          type: string
-        amount:
-          description: ""
-          type: string
-        authorized:
-          description: ""
-          type: boolean
-        expiredAt:
-          format: date-time
-          description: ""
-          type: string
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              error_code:
+                description: 6-digit system internal error code, for issue handling
+                  with Rabobank
+                type: string
+              error_type:
+                description: Description of what kind of error occured
+                type: string
+              error_message:
+                description: Enriched error description for the enduser
+                type: string
       example:
-        productType: I
-        product: ML01
-        currency: EUR
-        amount: 4.400000053E7
-        expiredAt: 2020-05-30T16:06:05Z
-        authorized: true
+        errors:
+        - error_code: "200045"
+          error_type: ValidationError
+          error_message: 'The provided attribute had to many caracters (max: 65)'
   responses:
     Error:
       content:
