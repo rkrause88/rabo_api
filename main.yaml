@@ -17,7 +17,7 @@ paths:
     post:
       requestBody:
         content:
-          application/json:
+          application/json;version=1.0.0:
             schema:
               $ref: '#/components/schemas/LetterOfCredit'
         required: true
@@ -97,7 +97,7 @@ paths:
       responses:
         "200":
           content:
-            application/json:
+            application/json;version=1.0.0:
               schema:
                 $ref: '#/components/schemas/LetterOfCreditResponse'
           description: Provide the letter of credit resource.
@@ -144,6 +144,30 @@ paths:
           description: Internal Server Error - error during prozessing of request
       summary: Get details of an letter of credit
     patch:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LetterOfCreditUpdateRequest'
+            examples:
+              LC Patch request:
+                value:
+                  currency: EUR
+                  amount: 4.400000053E7
+                  issued_at: 2019-12-16T16:06:05Z
+                  expired_at: 2020-05-30T16:06:05Z
+                  product_code: ML01
+                  shipment:
+                    from: Rio de Janeiro
+                    to: Hamburg
+                    partial: true
+                    transferable: true
+                    period: comment ...
+                  participants:
+                    advising_bank: Cooperatieve Rabobank
+                    beneficiary: TRADE CUST 01
+                    applicant: TRADE CUST 02
+        required: true
       tags:
       - LetterOfCredit
       responses:
@@ -288,6 +312,7 @@ components:
       - issued_at
       - expired_at
       - shipment
+      - participants
       type: object
       properties:
         currency:
@@ -341,6 +366,9 @@ components:
             ISO8601 based date format(("yyyy-MM-dd'T'HH:mm:ssZ")).
           pattern: 2[0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]Z
           type: string
+        participants:
+          $ref: '#/components/schemas/Participants'
+          description: Information of engaged trade parties.
       example:
         product_type: I
         product: ML01
@@ -355,6 +383,10 @@ components:
           partial: true
           transferable: true
           period: comment ...
+        participants:
+          advising_bank: Cooperatieve Rabobank
+          beneficiary: TRADE CUST 01
+          applicant: TRADE CUST 02
     Shipment:
       description: ""
       required:
@@ -430,6 +462,96 @@ components:
       - error_code: WSR006
         error_type: Fault
         error_message: Customer Number 2128 does not exist
+    Participants:
+      title: Root Type for Participants
+      description: Provides information of engaged trade parties.
+      required:
+      - advising_bank
+      - applicant
+      - beneficiary
+      type: object
+      properties:
+        advising_bank:
+          description: Trade party
+          maxLength: 100
+          type: string
+        beneficiary:
+          description: Trade party
+          maxLength: 100
+          type: string
+        applicant:
+          description: Trade party
+          maxLength: 100
+          type: string
+      example:
+        advising_bank: Cooperatieve Rabobank
+        beneficiary: TRADE CUST 01
+        applicant: TRADE CUST 02
+    LetterOfCreditUpdateRequest:
+      title: Root Type for LetterOfCreditUpdateRequest
+      description: ""
+      type: object
+      properties:
+        currency:
+          description: Assiged currency to the amount
+          maxLength: 3
+          minLength: 3
+          pattern: '[A-Z]{3}'
+          type: string
+        amount:
+          format: double
+          description: Letter of credit amount
+          type: number
+        issued_at:
+          format: date-time
+          description: |
+            The letter of credit issue date.
+            ISO8601 based date format(("yyyy-MM-dd'T'HH:mm:ssZ")).
+          pattern: 2[0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]Z
+          type: string
+        expired_at:
+          format: date-time
+          description: "Specify the expiry date for the facility. If the limit amount\
+            \ assigned to the facility is not utilized within the specified expiry\
+            \ date then the Available check box will remain un-selected. This freezes\
+            \ the line for the respective liability. \r\nISO8601 based date format(\"\
+            yyyy-MM-dd'T'HH:mm:ssZ\")."
+          pattern: 2[0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]Z
+          type: string
+        product_code:
+          description: |-
+            ML01 - "Import LC issuance - Non Revolving - Commission in advance"
+            or
+            Ml02 - "Import LC issuance - Non Revolving - Commission in arrears"
+          maxLength: 3
+          minLength: 3
+          pattern: '[A-Z0-9]{3}'
+          enum:
+          - ML01
+          - ML02
+          type: string
+        shipment:
+          $ref: '#/components/schemas/Shipment'
+          description: Shipment details of letter of credit.
+        participants:
+          $ref: '#/components/schemas/Participants'
+          description: Information of engaged trade parties.
+      example:
+        currency: EUR
+        amount: 4.400000053E7
+        issued_at: 2019-12-16T16:06:05Z
+        expired_at: 2020-05-30T16:06:05Z
+        product_code: ML01
+        shipment:
+          from: Rio de Janeiro
+          to: Hamburg
+          partial: true
+          transferable: true
+          period: comment ...
+        participants:
+          advising_bank: Cooperatieve Rabobank
+          beneficiary: TRADE CUST 01
+          applicant: TRADE CUST 02
   headers:
     Content-Location:
       schema:
