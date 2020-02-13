@@ -568,8 +568,10 @@ components:
       type: object
       properties:
         description:
+          maxLength: 65
           type: string
         units:
+          maxLength: 65
           type: string
         unitPrice:
           format: double
