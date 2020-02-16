@@ -436,50 +436,6 @@ components:
       - error_code: WSR006
         error_type: Fault
         error_message: Customer Number 2128 does not exist
-    Participants:
-      title: Root Type for Participants
-      description: Information of engaged trade parties.
-      required:
-      - advising_bank
-      - applicant
-      - beneficiary
-      type: object
-      properties:
-        advising_bank:
-          description: Trade party
-          maxLength: 100
-          type: string
-        beneficiary:
-          description: Trade party
-          maxLength: 100
-          type: string
-        applicant:
-          description: Trade party
-          maxLength: 100
-          type: string
-      example:
-        advising_bank: Cooperatieve Rabobank
-        beneficiary: TRADE CUST 01
-        applicant: TRADE CUST 02
-    Good:
-      title: Root Type for Good
-      description: Detailed list of goods that are part of the shipment with in the
-        context of the LC.
-      type: object
-      properties:
-        description:
-          maxLength: 65
-          type: string
-        units:
-          maxLength: 65
-          type: string
-        unitPrice:
-          format: double
-          type: number
-      example:
-        description: Crude oil - 2Bseen
-        units: 10 BBL
-        unitPrice: 55.4
     LetterOfCreditUpdateRequest:
       title: LetterOfCreditUpdateRequest
       description: ""
@@ -589,6 +545,50 @@ components:
         amount: 4.400000053E7
         expired_at: 2020-05-30T16:06:05Z
         authorized: true
+    Good:
+      title: Good
+      description: Detailed list of goods that are part of the shipment with in the
+        context of the LC.
+      type: object
+      properties:
+        description:
+          maxLength: 65
+          type: string
+        units:
+          maxLength: 65
+          type: string
+        unitPrice:
+          format: double
+          type: number
+      example:
+        description: Crude oil - 2Bseen
+        units: 10 BBL
+        unitPrice: 55.4
+    Participants:
+      title: Participants
+      description: Information of engaged trade parties.
+      required:
+      - advising_bank
+      - applicant
+      - beneficiary
+      type: object
+      properties:
+        advising_bank:
+          description: Trade party
+          maxLength: 100
+          type: string
+        beneficiary:
+          description: Trade party
+          maxLength: 100
+          type: string
+        applicant:
+          description: Trade party
+          maxLength: 100
+          type: string
+      example:
+        advising_bank: Cooperatieve Rabobank
+        beneficiary: TRADE CUST 01
+        applicant: TRADE CUST 02
   headers:
     Content-Location:
       schema:
