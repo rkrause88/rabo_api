@@ -157,8 +157,8 @@ paths:
                 value:
                   currency: EUR
                   amount: 4.400000053E7
-                  issued_at: 2019-12-16T16:06:05Z
-                  expired_at: 2020-05-30T16:06:05Z
+                  issued_at: 2019-12-16T16:06:05.000Z
+                  expired_at: 2020-05-30T16:06:05.000Z
                   product_code: ML01
                   shipment:
                     from: Rio de Janeiro
@@ -293,9 +293,9 @@ components:
             Options:
             ML01 - "Import LC issuance - Non Revolving - Commission in advance"
             Ml02 - "Import LC issuance - Non Revolving - Commission in arrears"
-          maxLength: 3
-          minLength: 3
-          pattern: '[A-Z0-9]{3}'
+          maxLength: 4
+          minLength: 4
+          pattern: '[A-Z0-9]{4}'
           enum:
           - ML01
           - ML02
@@ -343,14 +343,15 @@ components:
         product: ML01
         currency: EUR
         amount: 4.400000053E7
-        issued_at: 2019-12-16T16:06:05Z
-        expired_at: 2020-05-30T16:06:05Z
+        issued_at: 2019-12-16T16:06:05.000Z
+        expired_at: 2020-05-30T16:06:05.000Z
         product_code: ML01
         shipment:
           from: Rio de Janeiro
           to: Hamburg
           partial: true
           transferable: true
+          latest_shipment_at: 2020-03-30T16:06:05.000Z
           period: comment ...
         participants:
           advising_bank: Cooperatieve Rabobank
@@ -472,9 +473,9 @@ components:
             ML01 - "Import LC issuance - Non Revolving - Commission in advance"
             or
             Ml02 - "Import LC issuance - Non Revolving - Commission in arrears"
-          maxLength: 3
-          minLength: 3
-          pattern: '[A-Z0-9]{3}'
+          maxLength: 4
+          minLength: 4
+          pattern: '[A-Z0-9]{4}'
           enum:
           - ML01
           - ML02
@@ -488,14 +489,15 @@ components:
       example:
         currency: EUR
         amount: 4.400000053E7
-        issued_at: 2019-12-16T16:06:05Z
-        expired_at: 2020-05-30T16:06:05Z
+        issued_at: 2019-12-16T16:06:05.000Z
+        expired_at: 2020-05-30T16:06:05.000Z
         product_code: ML01
         shipment:
           from: Rio de Janeiro
           to: Hamburg
           partial: true
           transferable: true
+          latest_shipment_at: 2020-03-30T16:06:05.000Z
           period: comment ...
         participants:
           advising_bank: Cooperatieve Rabobank
@@ -529,8 +531,9 @@ components:
           description: ""
           type: string
         amount:
+          format: double
           description: ""
-          type: string
+          type: number
         authorized:
           description: ""
           type: boolean
@@ -542,8 +545,8 @@ components:
         product_type: I
         product: ML01
         currency: EUR
-        amount: 4.400000053E7
-        expired_at: 2020-05-30T16:06:05Z
+        amount: 4.0000000005E9
+        expired_at: 2020-05-30T16:06:05.000Z
         authorized: true
     Good:
       title: Good
@@ -597,4 +600,4 @@ components:
       description: Path to the created resource.
 tags:
 - name: LetterOfCredit
-  description: Letter Of Credit
+  description: Letter Of Credit operation
