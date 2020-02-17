@@ -10,7 +10,7 @@ info:
     url: https://rabobank.com/api/
     email: Bram.Bergshoeff@rabobank.com
 servers:
-- url: https://rabobank.com/
+- url: https://rabobank.com
   description: Rabobank production system
 paths:
   /clients/{clientId}/lettersOfCredit:
@@ -311,8 +311,6 @@ components:
           type: string
         shipment:
           $ref: '#/components/schemas/Shipment'
-          description: Detailed location and timing information about the shipment
-            of the goods.
         expired_at:
           format: date-time
           description: "Specify the expiry date for the facility. If the limit amount\
@@ -331,7 +329,6 @@ components:
           type: string
         participants:
           $ref: '#/components/schemas/Participants'
-          description: Information of engaged trade parties.
         goods:
           description: Detailed list of goods that are part of the shipment with in
             the context of the LC.
@@ -343,15 +340,15 @@ components:
         product: ML01
         currency: EUR
         amount: 4.400000053E7
-        issued_at: 2019-12-16T16:06:05.000Z
-        expired_at: 2020-05-30T16:06:05.000Z
+        issued_at: 2019-12-16T16:06:05Z
+        expired_at: 2020-05-30T16:06:05Z
         product_code: ML01
         shipment:
           from: Rio de Janeiro
           to: Hamburg
           partial: true
           transferable: true
-          latest_shipment_at: 2020-03-30T16:06:05.000Z
+          latest_shipment_at: 2020-03-30T16:06:05Z
           period: comment ...
         participants:
           advising_bank: Cooperatieve Rabobank
@@ -433,22 +430,20 @@ components:
           type: string
         shipment:
           $ref: '#/components/schemas/Shipment'
-          description: Shipment details of letter of credit.
         participants:
           $ref: '#/components/schemas/Participants'
-          description: Information of engaged trade parties.
       example:
         currency: EUR
         amount: 4.400000053E7
-        issued_at: 2019-12-16T16:06:05.000Z
-        expired_at: 2020-05-30T16:06:05.000Z
+        issued_at: 2019-12-16T16:06:05Z
+        expired_at: 2020-05-30T16:06:05Z
         product_code: ML01
         shipment:
           from: Rio de Janeiro
           to: Hamburg
           partial: true
           transferable: true
-          latest_shipment_at: 2020-03-30T16:06:05.000Z
+          latest_shipment_at: 2020-03-30T16:06:05Z
           period: comment ...
         participants:
           advising_bank: Cooperatieve Rabobank
@@ -591,6 +586,7 @@ components:
         to: Hamburg
         partial: true
         transferable: true
+        latest_shipment_at: 2020-03-30T16:06:05Z
         period: comment ...
   headers:
     Content-Location:
