@@ -361,55 +361,6 @@ components:
         - description: Crude oil - 2Bseen
           units: 10 BBL
           unitPrice: 55.4
-    Shipment:
-      description: Detailed location and timing information about the shipment of
-        the goods.
-      required:
-      - latest_shipment_at
-      - period
-      type: object
-      properties:
-        transferable:
-          description: |-
-            Indicates if an transferable shipment is allowed.
-            (Default: true)
-          default: true
-          type: boolean
-        partial:
-          description: "Indicates if partial shipment is allowed \r\n(Default: true)"
-          default: true
-          type: boolean
-        from:
-          description: Place of taking goods in Charge / Place of receipt
-          maxLength: 65
-          type: string
-        to:
-          description: Place of final destination / Place of delivery
-          maxLength: 65
-          type: string
-        latest_shipment_at:
-          format: date-time
-          description: "Latest point in time for the shipment. \nFormat : \"yyyy-MM-dd'T'HH:mm:ssZ\""
-          pattern: 2[0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]Z
-          type: string
-        period:
-          description: Shipment period
-          maxLength: 395
-          type: string
-        loading_port:
-          description: Airport of loading the goods
-          maxLength: 65
-          type: string
-        discharge_port:
-          description: Airport to discharge the goods
-          maxLength: 65
-          type: string
-      example:
-        from: Rio de Janeiro
-        to: Hamburg
-        partial: true
-        transferable: true
-        period: comment ...
     Error:
       description: Error and Exception reprensentation.
       type: object
@@ -592,6 +543,55 @@ components:
         advising_bank: Cooperatieve Rabobank
         beneficiary: TRADE CUST 01
         applicant: TRADE CUST 02
+    Shipment:
+      description: Detailed location and timing information about the shipment of
+        the goods.
+      required:
+      - latest_shipment_at
+      - period
+      type: object
+      properties:
+        transferable:
+          description: |-
+            Indicates if an transferable shipment is allowed.
+            (Default: false)
+          default: false
+          type: boolean
+        partial:
+          description: "Indicates if partial shipment is allowed \r\n(Default: false)"
+          default: false
+          type: boolean
+        from:
+          description: Place of taking goods in Charge / Place of receipt
+          maxLength: 65
+          type: string
+        to:
+          description: Place of final destination / Place of delivery
+          maxLength: 65
+          type: string
+        latest_shipment_at:
+          format: date-time
+          description: "Latest point in time for the shipment. \nFormat : \"yyyy-MM-dd'T'HH:mm:ssZ\""
+          pattern: 2[0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]Z
+          type: string
+        period:
+          description: Shipment period
+          maxLength: 395
+          type: string
+        loading_port:
+          description: Airport of loading the goods
+          maxLength: 65
+          type: string
+        discharge_port:
+          description: Airport to discharge the goods
+          maxLength: 65
+          type: string
+      example:
+        from: Rio de Janeiro
+        to: Hamburg
+        partial: true
+        transferable: true
+        period: comment ...
   headers:
     Content-Location:
       schema:
