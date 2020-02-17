@@ -2,7 +2,7 @@
 openapi: 3.0.2
 info:
   title: Letter Of Credit (OpenAPI 3.0.2)
-  version: 0.5.0
+  version: 0.7.0
   description: The Letter of Credit business API allows  public user to perform different
     kinds of actions with in the  import/export letter context .
   contact:
@@ -37,7 +37,7 @@ paths:
               examples:
                 "401 Error":
                   value:
-                  - error_code: WSR410
+                  - error_code: WSR400
                     error_type: Fault
                     error_message: Authorization failed.
           description: Input missing / Validation failed.
@@ -45,6 +45,18 @@ paths:
           description: Not authorized.
         "405":
           description: Method Not Allowed
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+              examples:
+                "405 Error":
+                  value:
+                  - error_code: WSR406
+                    error_type: Fault
+                    error_message: Method Not Allowed.
+          description: Respones can't served with requested media type.
         "415":
           content:
             application/json:
@@ -56,8 +68,7 @@ paths:
                   - error_code: WSR415
                     error_type: Fault
                     error_message: Unsupported Media Type.
-          description: Unsupported Media Type - Returned if version or response content
-            type isn't available.
+          description: Request with unsupported media type.
         "500":
           content:
             application/json:
@@ -119,7 +130,7 @@ paths:
           description: Resource not found.
         "405":
           description: Method Not Allowed
-        "415":
+        "406":
           content:
             application/json:
               schema:
@@ -127,11 +138,10 @@ paths:
               examples:
                 "405 Error":
                   value:
-                  - error_code: WSR415
+                  - error_code: WSR406
                     error_type: Fault
-                    error_message: Unsupported Media Type.
-          description: Unsupported Media Type - Returned if version or response content
-            type isn't available.
+                    error_message: Method Not Allowed.
+          description: Respones can't served with requested media type.
         "500":
           content:
             application/json:
@@ -184,7 +194,7 @@ paths:
               examples:
                 "401 Error":
                   value:
-                  - error_code: WSR410
+                  - error_code: WSR400
                     error_type: Fault
                     error_message: Authorization failed.
           description: Input missing / Validation failed.
@@ -204,6 +214,18 @@ paths:
           description: Resource not found.
         "405":
           description: Method Not Allowed
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+              examples:
+                "405 Error":
+                  value:
+                  - error_code: WSR406
+                    error_type: Fault
+                    error_message: Method Not Allowed.
+          description: Respones can't served with requested media type.
         "415":
           content:
             application/json:
@@ -215,8 +237,7 @@ paths:
                   - error_code: WSR415
                     error_type: Fault
                     error_message: Unsupported Media Type.
-          description: Unsupported Media Type - Returned if version or response content
-            type isn't available.
+          description: Request with unsupported media type.
         "500":
           content:
             application/json:
