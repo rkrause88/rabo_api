@@ -30,15 +30,16 @@ paths:
           description: Resource created.
         "400":
           content:
-            application/json:
+            application/problem+json:
               schema:
-                $ref: '#/components/schemas/ErrorList'
+                $ref: '#/components/schemas/Errors'
               examples:
                 "401 Error":
                   value:
-                  - error_code: WSR400
-                    error_type: Fault
-                    error_message: Authorization failed.
+                    errors:
+                    - error_code: WSR400
+                      error_type: Fault
+                      error_message: Authorization failed.
           description: Input missing / Validation failed.
         "401":
           description: Not authorized.
@@ -46,39 +47,42 @@ paths:
           description: Method Not Allowed
         "406":
           content:
-            application/json:
+            application/problem+json:
               schema:
-                $ref: '#/components/schemas/ErrorList'
+                $ref: '#/components/schemas/Errors'
               examples:
                 "405 Error":
                   value:
-                  - error_code: WSR406
-                    error_type: Fault
-                    error_message: Method Not Allowed.
+                    errors:
+                    - error_code: WSR406
+                      error_type: Fault
+                      error_message: Method Not Allowed.
           description: Respones can't served with requested media type.
         "415":
           content:
-            application/json:
+            application/problem+json:
               schema:
-                $ref: '#/components/schemas/ErrorList'
+                $ref: '#/components/schemas/Errors'
               examples:
                 "405 Error":
                   value:
-                  - error_code: WSR415
-                    error_type: Fault
-                    error_message: Unsupported Media Type.
+                    errors:
+                    - error_code: WSR415
+                      error_type: Fault
+                      error_message: Unsupported Media Type.
           description: Request with unsupported media type.
         "500":
           content:
-            application/json:
+            application/problem+json:
               schema:
-                $ref: '#/components/schemas/ErrorList'
+                $ref: '#/components/schemas/Errors'
               examples:
                 "500 Error":
                   value:
-                  - error_code: WSR500
-                    error_type: Error
-                    error_message: Server error! Please try again.
+                    errors:
+                    - error_code: WSR500
+                      error_type: Error
+                      error_message: Server error! Please try again.
           description: Internal Server Error - error during prozessing of request
       summary: Create Letter of Credit
       description: Endpoint with the the facility to create a Letter of Credit resource
@@ -117,41 +121,44 @@ paths:
           description: Not authorized.
         "404":
           content:
-            application/json:
+            application/problem+json:
               schema:
-                $ref: '#/components/schemas/ErrorList'
+                $ref: '#/components/schemas/Errors'
               examples:
                 "405 Error":
                   value:
-                  - error_code: WSR404
-                    error_type: NotFound.
-                    error_message: Letter of credit not found.
+                    errors:
+                    - error_code: WSR404
+                      error_type: NotFound.
+                      error_message: Letter of credit not found.
           description: Resource not found.
         "405":
           description: Method Not Allowed
         "406":
           content:
-            application/json:
+            application/problem+json:
               schema:
-                $ref: '#/components/schemas/ErrorList'
+                $ref: '#/components/schemas/Errors'
               examples:
                 "405 Error":
                   value:
-                  - error_code: WSR406
-                    error_type: Fault
-                    error_message: Method Not Allowed.
+                    errors:
+                    - error_code: WSR406
+                      error_type: Fault
+                      error_message: Method Not Allowed.
           description: Respones can't served with requested media type.
         "500":
           content:
-            application/json:
+            application/problem+json:
               schema:
-                $ref: '#/components/schemas/ErrorList'
+                $ref: '#/components/schemas/Errors'
               examples:
                 "500 Error":
                   value:
-                  - error_code: WSR500
-                    error_type: Error
-                    error_message: Server error! Please try again.
+                    errors:
+                    - error_code: WSR500
+                      error_type: Error
+                      error_message: Server error! Please try again.
           description: Internal Server Error - error during prozessing of request
       summary: Get letter of credit
       description: Endpoint to get detailed information of an single  letter of credit
@@ -187,67 +194,72 @@ paths:
           description: Import LC was updated successfully.
         "400":
           content:
-            application/json:
+            application/problem+json:
               schema:
-                $ref: '#/components/schemas/ErrorList'
+                $ref: '#/components/schemas/Errors'
               examples:
                 "401 Error":
                   value:
-                  - error_code: WSR400
-                    error_type: Fault
-                    error_message: Authorization failed.
+                    errors:
+                    - error_code: WSR400
+                      error_type: Fault
+                      error_message: Authorization failed.
           description: Input missing / Validation failed.
         "401":
           description: Not authorized.
         "404":
           content:
-            application/json:
+            application/problem+json:
               schema:
-                $ref: '#/components/schemas/ErrorList'
+                $ref: '#/components/schemas/Errors'
               examples:
                 "401 Error":
                   value:
-                  - error_code: WSR404
-                    error_type: Fault
-                    error_message: No content found for this client.
+                    errors:
+                    - error_code: WSR404
+                      error_type: Fault
+                      error_message: No content found for this client.
           description: Resource not found.
         "405":
           description: Method Not Allowed
         "406":
           content:
-            application/json:
+            application/problem+json:
               schema:
-                $ref: '#/components/schemas/ErrorList'
+                $ref: '#/components/schemas/Errors'
               examples:
                 "405 Error":
                   value:
-                  - error_code: WSR406
-                    error_type: Fault
-                    error_message: Method Not Allowed.
+                    errors:
+                    - error_code: WSR406
+                      error_type: Fault
+                      error_message: Method Not Allowed.
           description: Respones can't served with requested media type.
         "415":
           content:
-            application/json:
+            application/problem+json:
               schema:
-                $ref: '#/components/schemas/ErrorList'
+                $ref: '#/components/schemas/Errors'
               examples:
                 "405 Error":
                   value:
-                  - error_code: WSR415
-                    error_type: Fault
-                    error_message: Unsupported Media Type.
+                    errors:
+                    - error_code: WSR415
+                      error_type: Fault
+                      error_message: Unsupported Media Type.
           description: Request with unsupported media type.
         "500":
           content:
-            application/json:
+            application/problem+json:
               schema:
-                $ref: '#/components/schemas/ErrorList'
+                $ref: '#/components/schemas/Errors'
               examples:
                 "500 Error":
                   value:
-                  - error_code: WSR500
-                    error_type: Error
-                    error_message: Server error! Please try again.
+                    errors:
+                    - error_code: WSR500
+                      error_type: Error
+                      error_message: Server error! Please try again.
           description: Internal Server Error - error during prozessing of request
       summary: Update/modify letter of credit
       description: Endpoint to update/modify a letter of credit with in the Rabobank
@@ -396,15 +408,20 @@ components:
         error_code: WSR006
         error_type: Fault
         error_message: Customer Number 2128 does not exist
-    ErrorList:
+    Errors:
       description: Error and Exception reprensentation.
-      type: array
-      items:
-        $ref: '#/components/schemas/Error'
+      type: object
+      properties:
+        errors:
+          description: List of errors
+          type: array
+          items:
+            $ref: '#/components/schemas/Error'
       example:
-      - error_code: WSR006
-        error_type: Fault
-        error_message: Customer Number 2128 does not exist
+        errors:
+        - error_code: WSR006
+          error_type: Fault
+          error_message: Customer Number 2128 does not exist
     LetterOfCreditUpdateRequest:
       title: LetterOfCreditUpdateRequest
       description: ""
