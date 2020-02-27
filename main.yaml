@@ -531,25 +531,6 @@ components:
         amount: 4.0000000005E9
         expired_at: 2020-05-30T16:06:05.000Z
         authorized: true
-    Good:
-      title: Good
-      description: Detailed list of goods that are part of the shipment with in the
-        context of the LC.
-      type: object
-      properties:
-        description:
-          maxLength: 65
-          type: string
-        units:
-          maxLength: 65
-          type: string
-        unitPrice:
-          format: double
-          type: number
-      example:
-        description: Crude oil - 2Bseen
-        units: 10 BBL
-        unitPrice: 55.4
     Participants:
       title: Participants
       description: Information of engaged trade parties.
@@ -625,6 +606,21 @@ components:
         transferable: true
         latest_shipment_at: 2020-03-30T16:06:05Z
         period: comment ...
+    Good:
+      title: Good
+      description: Detailed list of goods that are part of the shipment with in the
+        context of the LC.
+      type: object
+      properties:
+        description:
+          maxLength: 6500
+          type: string
+        code:
+          maxLength: 12
+          type: string
+      example:
+        description: Crude oil - 2Bseen
+        code: 10 BBL
   headers:
     Content-Location:
       schema:
