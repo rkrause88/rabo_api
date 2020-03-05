@@ -161,7 +161,8 @@ paths:
                       error_message: Server error! Please try again.
           description: Internal Server Error - error during prozessing of request
       summary: Get letter of credit
-      description: Endpoint to get detailed information of an single  letter of credit
+      description: Endpoint to get detailed status information of an single  letter
+        of credit
     patch:
       requestBody:
         content:
@@ -292,136 +293,207 @@ paths:
         type: string
       in: header
       required: true
+  /clients/{client-id}/lettersofcredit/{contract-reference-number}/amendments:
+    post:
+      requestBody:
+        content:
+          application/json;version=1.0.0:
+            schema:
+              $ref: '#/components/schemas/Amendment'
+        required: true
+      tags:
+      - Amendment
+      responses:
+        "201":
+          headers:
+            Content-Location:
+              $ref: '#/components/headers/Content-Location'
+          description: Resource created.
+        "400":
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+              examples:
+                "401 Error":
+                  value:
+                    errors:
+                    - error_code: WSR400
+                      error_type: Fault
+                      error_message: Authorization failed.
+          description: Input missing / Validation failed.
+        "401":
+          description: Not authorized.
+        "405":
+          description: Method Not Allowed
+        "406":
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+              examples:
+                "405 Error":
+                  value:
+                    errors:
+                    - error_code: WSR406
+                      error_type: Fault
+                      error_message: Method Not Allowed.
+          description: Respones can't served with requested media type.
+        "415":
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+              examples:
+                "405 Error":
+                  value:
+                    errors:
+                    - error_code: WSR415
+                      error_type: Fault
+                      error_message: Unsupported Media Type.
+          description: Request with unsupported media type.
+        "500":
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+              examples:
+                "500 Error":
+                  value:
+                    errors:
+                    - error_code: WSR500
+                      error_type: Error
+                      error_message: Server error! Please try again.
+          description: Internal Server Error - error during prozessing of request
+      summary: Create amendment
+      description: |-
+        Create a new  for a single letter of credit
+        Endpoint with the the facility to create a amendment resource for a LC with in the Rabobank system.
+    parameters:
+    - examples:
+        Client UUID:
+          value: "24e67f63-5b9a-4c71-b206-d1e5511f7037\t\r\n"
+      name: client-id
+      description: UUID of an GCDS contact
+      schema:
+        type: string
+      in: path
+      required: true
+    - examples:
+        Import LC UUID:
+          value: 5cdb034c-f67f-453f-9ae8-b125c3d64372
+      name: contract-reference-number
+      description: UUID of an existing import LC
+      schema:
+        type: string
+      in: path
+      required: true
+    - examples:
+        X-MSGID:
+          value: WORKFLOW_WorkflowUser_123456789_1514764799
+      name: X-MSGID
+      description: external identifier that is handed over to FCUBS for traceability
+      schema:
+        type: string
+      in: header
+      required: true
 components:
   schemas:
-    LetterOfCredit:
-      title: ImportLetterOfCredit
-      description: ImportLetterOfCredit
+    Participants:
+      title: Participants
+      description: Information of engaged trade parties.
       required:
-      - amount
-      - currency
-      - product_code
-      - product_type
-      - issued_at
-      - expired_at
-      - shipment
-      - participants
-      - goods
+      - advising_bank
+      - applicant
+      - beneficiary
       type: object
       properties:
-        currency:
-          description: Assiged currency to the amount
-          maxLength: 3
-          minLength: 3
-          pattern: '[A-Z]{3}'
+        advising_bank:
+          description: Trade party
+          maxLength: 100
           type: string
-        amount:
-          format: double
-          description: Amount of the guaranteed payment between buyer/seller.
-          type: number
-        product_code:
+        beneficiary:
+          description: Trade party
+          maxLength: 100
+          type: string
+        applicant:
+          description: Trade party
+          maxLength: 100
+          type: string
+      example:
+        advising_bank: Cooperatieve Rabobank
+        beneficiary: TRADE CUST 01
+        applicant: TRADE CUST 02
+    Shipment:
+      description: Detailed location and timing information about the shipment of
+        the goods.
+      required:
+      - latest_shipment_at
+      type: object
+      properties:
+        transferable:
           description: |-
-            Definition for the way of commission.
-            Options:
-            ML01 - "Import LC issuance - Non Revolving - Commission in advance"
-            Ml02 - "Import LC issuance - Non Revolving - Commission in arrears"
-          maxLength: 4
-          minLength: 4
-          pattern: '[A-Z0-9]{4}'
-          enum:
-          - ML01
-          - ML02
+            This field identifies whether or not transshipment is allowed under the documentary credit.
+            (Default: false)
+          default: false
+          type: boolean
+        partial:
+          description: "This field specifies whether or not partial shipments are\
+            \ allowed under the documentary credit.\r\n(Default: false)"
+          default: false
+          type: boolean
+        from:
+          description: Place of taking goods in Charge / Place of receipt
+          maxLength: 65
           type: string
-        product_type:
-          description: "Definition of the LC kind. \nOptions:\nI - \"Import letter\"\
-            \nE - \"Export letter\""
-          maxLength: 1
-          minLength: 1
-          enum:
-          - I
-          - E
+        to:
+          description: Place of final destination / Place of delivery
+          maxLength: 65
           type: string
-        shipment:
-          $ref: '#/components/schemas/Shipment'
-        expired_at:
+        latest_shipment_at:
           format: date-time
-          description: "Specify the expiry date for the facility. If the limit amount\
-            \ assigned to the facility is not utilized within the specified expiry\
-            \ date then the Available check box will remain un-selected. This freezes\
-            \ the line for the respective liability. \r\nISO8601 based date format(\"\
-            yyyy-MM-dd'T'HH:mm:ssZ\")."
+          description: |-
+            This field identifies the latest date for loading on board/dispatch/taking in charge.
+            Format : "yyyy-MM-dd'T'HH:mm:ssZ"
           pattern: 2[0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]Z
           type: string
-        issued_at:
-          format: date-time
-          description: |
-            The letter of credit issue date.
-            ISO8601 based date format(("yyyy-MM-dd'T'HH:mm:ssZ")).
-          pattern: 2[0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]Z
+        period:
+          description: This field specifies the period of time during which the goods
+            are to be loaded on board / despatched / taken in charge.
+          maxLength: 395
           type: string
-        participants:
-          $ref: '#/components/schemas/Participants'
-        goods:
-          description: Detailed list of goods that are part of the shipment with in
-            the context of the LC.
-          type: array
-          items:
-            $ref: '#/components/schemas/Good'
+        loading_port:
+          description: Airport of loading the goods
+          maxLength: 65
+          type: string
+        discharge_port:
+          description: Airport to discharge the goods
+          maxLength: 65
+          type: string
       example:
-        product_type: I
-        product: ML01
-        currency: EUR
-        amount: 4.400000053E7
-        issued_at: 2019-12-16T16:06:05Z
-        expired_at: 2020-05-30T16:06:05Z
-        product_code: ML01
-        shipment:
-          from: Rio de Janeiro
-          to: Hamburg
-          partial: true
-          transferable: true
-          latest_shipment_at: 2020-03-30T16:06:05Z
-          period: comment ...
-        participants:
-          advising_bank: Cooperatieve Rabobank
-          beneficiary: TRADE CUST 01
-          applicant: TRADE CUST 02
-        goods:
-        - description: Crude oil - 2Bseen
-          units: 10 BBL
-          unitPrice: 55.4
-    Error:
-      description: Error and Exception reprensentation.
+        from: Rio de Janeiro
+        to: Hamburg
+        partial: true
+        transferable: true
+        latest_shipment_at: 2020-03-30T16:06:05Z
+        period: comment ...
+    Good:
+      title: Good
+      description: Detailed list of goods that are part of the shipment with in the
+        context of the LC.
       type: object
       properties:
-        error_code:
-          description: 6-digit system internal error code, for issue handling with
-            Rabobank
+        description:
+          description: Detailed product description
+          maxLength: 6500
           type: string
-        error_type:
-          description: Description of what kind of error occured
-          type: string
-        error_message:
-          description: Enriched error description for the enduser
+        code:
+          description: Identifier for the described good.
+          maxLength: 12
           type: string
       example:
-        error_code: WSR006
-        error_type: Fault
-        error_message: Customer Number 2128 does not exist
-    Errors:
-      description: Error and Exception reprensentation.
-      type: object
-      properties:
-        errors:
-          description: List of errors
-          type: array
-          items:
-            $ref: '#/components/schemas/Error'
-      example:
-        errors:
-        - error_code: WSR006
-          error_type: Fault
-          error_message: Customer Number 2128 does not exist
+        description: Crude oil - 2Bseen
+        code: 10 BBL
     LetterOfCreditUpdateRequest:
       title: LetterOfCreditUpdateRequest
       description: ""
@@ -453,7 +525,7 @@ components:
             yyyy-MM-dd'T'HH:mm:ssZ\")."
           pattern: 2[0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]Z
           type: string
-        product_code:
+        commission_type:
           description: |-
             ML01 - "Import LC issuance - Non Revolving - Commission in advance"
             or
@@ -474,6 +546,98 @@ components:
         amount: 4.400000053E7
         issued_at: 2019-12-16T16:06:05Z
         expired_at: 2020-05-30T16:06:05Z
+        commission_type: ML01
+        shipment:
+          from: Rio de Janeiro
+          to: Hamburg
+          partial: true
+          transferable: true
+          latest_shipment_at: 2020-03-30T16:06:05Z
+          period: comment ...
+        participants:
+          advising_bank: Cooperatieve Rabobank
+          beneficiary: TRADE CUST 01
+          applicant: TRADE CUST 02
+    LetterOfCredit:
+      title: ImportLetterOfCredit
+      description: ImportLetterOfCredit
+      required:
+      - amount
+      - currency
+      - product
+      - commission_type
+      - issued_at
+      - expired_at
+      - shipment
+      - participants
+      - goods
+      type: object
+      properties:
+        currency:
+          description: Assiged currency to the amount
+          maxLength: 3
+          minLength: 3
+          pattern: '[A-Z]{3}'
+          type: string
+        amount:
+          format: double
+          description: Amount of the guaranteed payment between buyer/seller.
+          type: number
+        commission_type:
+          description: |-
+            Definition for the way of commission.
+            Options:
+            ML01 - "Import LC issuance - Non Revolving - Commission in advance"
+            Ml02 - "Import LC issuance - Non Revolving - Commission in arrears"
+          maxLength: 4
+          minLength: 4
+          pattern: '[A-Z0-9]{4}'
+          type: string
+          x-extensible-enum:
+          - ML01
+          - ML02
+        product:
+          description: "Definition of the LC kind. \nOptions:\nI - \"Import letter\"\
+            \nE - \"Export letter\""
+          maxLength: 1
+          minLength: 1
+          type: string
+          x-extensible-enum:
+          - I
+          - E
+        shipment:
+          $ref: '#/components/schemas/Shipment'
+        expired_at:
+          format: date-time
+          description: "Specify the expiry date for the facility. If the limit amount\
+            \ assigned to the facility is not utilized within the specified expiry\
+            \ date then the Available check box will remain un-selected. This freezes\
+            \ the line for the respective liability. \r\nISO8601 based date format(\"\
+            yyyy-MM-dd'T'HH:mm:ssZ\")."
+          pattern: 2[0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]Z
+          type: string
+        issued_at:
+          format: date-time
+          description: |
+            The letter of credit issue date.
+            ISO8601 based date format(("yyyy-MM-dd'T'HH:mm:ssZ")).
+          pattern: 2[0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]Z
+          type: string
+        participants:
+          $ref: '#/components/schemas/Participants'
+        goods:
+          description: Detailed list of goods that are part of the shipment with in
+            the context of the LC.
+          type: array
+          items:
+            $ref: '#/components/schemas/Good'
+      example:
+        product: I
+        commission_type: ML01
+        currency: EUR
+        amount: 4.400000053E7
+        issued_at: 2019-12-16T16:06:05Z
+        expired_at: 2020-05-30T16:06:05Z
         product_code: ML01
         shipment:
           from: Rio de Janeiro
@@ -486,141 +650,169 @@ components:
           advising_bank: Cooperatieve Rabobank
           beneficiary: TRADE CUST 01
           applicant: TRADE CUST 02
+        goods:
+        - description: Crude oil - 2Bseen
+          units: 10 BBL
+          unitPrice: 55.4
+    Amendment:
+      title: Root Type for Amendment
+      description: ""
+      type: object
+      properties:
+        currency:
+          description: Assiged currency to the amount
+          maxLength: 3
+          minLength: 3
+          pattern: '[A-Z]{3}'
+          type: string
+        amount:
+          format: double
+          description: Amount of the guaranteed payment between buyer/seller.
+          type: number
+        expired_at:
+          format: date-time
+          description: "Specify the expiry date for the facility. If the limit amount\
+            \ assigned to the facility is not utilized within the specified expiry\
+            \ date then the Available check box will remain un-selected. This freezes\
+            \ the line for the respective liability. \r\nISO8601 based date format(\"\
+            yyyy-MM-dd'T'HH:mm:ssZ\")."
+          pattern: 2[0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]Z
+          type: string
+        commission_type:
+          description: |-
+            Definition for the way of commission.
+            Options:
+            ML01 - "Import LC issuance - Non Revolving - Commission in advance"
+            Ml02 - "Import LC issuance - Non Revolving - Commission in arrears"
+          maxLength: 4
+          minLength: 4
+          pattern: '[A-Z0-9]{4}'
+          type: string
+          x-extensible-enum:
+          - ML01
+          - ML02
+        shipment:
+          $ref: '#/components/schemas/Shipment'
+        participants:
+          $ref: '#/components/schemas/Participants'
+        goods:
+          type: array
+          items:
+            $ref: '#/components/schemas/Good'
+      example:
+        currency: EUR
+        amount: 4.400000053E7
+        expired_at: 2020-05-30T16:06:05Z
+        shipment:
+          from: Rio de Janeiro
+          to: Hamburg
+          partial: true
+          transferable: true
+          latest_shipment_at: 2020-03-30T16:06:05Z
+          period: comment ...
+        participants:
+          advising_bank: Cooperatieve Rabobank
+          beneficiary: TRADE CUST 01
+          applicant: TRADE CUST 02
+        goods:
+        - description: Crude oil - 2Bseen
+          code: 10 BBL
+    Error:
+      description: Error and Exception reprensentation.
+      type: object
+      properties:
+        error_code:
+          description: 6-digit system internal error code, for issue handling with
+            Rabobank
+          type: string
+        error_type:
+          description: Description of what kind of error occured
+          type: string
+        error_display:
+          description: Enriched error description for the enduser
+          type: string
+      example:
+        error_code: WSR006
+        error_type: Fault
+        error_display: Customer Number 2128 does not exist
+    Errors:
+      description: Error and Exception reprensentation.
+      type: object
+      properties:
+        errors:
+          description: List of errors
+          type: array
+          items:
+            $ref: '#/components/schemas/Error'
+      example:
+        errors:
+        - error_code: WSR006
+          error_type: Fault
+          error_display: Customer Number 2128 does not exist
     LetterOfCreditResponse:
       title: LetterOfCreditResponse
       description: ""
       required:
-      - product_type
+      - commission_type
       - product
       - currency
       - amount
       - expired_at
-      - authorized
+      - state
       type: object
       properties:
-        product_type:
-          description: ""
-          enum:
+        product:
+          description: 'Definition of the LC kind. Options: I - "Import letter" E
+            - "Export letter"'
+          type: string
+          x-extensible-enum:
           - I
           - E
+        commission_type:
+          description: 'Definition for the way of commission. Options: ML01 - "Import
+            LC issuance - Non Revolving - Commission in advance" Ml02 - "Import LC
+            issuance - Non Revolving - Commission in arrears"'
+          maxLength: 4
+          minLength: 4
+          pattern: '[A-Z0-9]{4}'
           type: string
-        product:
-          description: ""
-          enum:
+          x-extensible-enum:
           - ML01
           - ML02
-          type: string
         currency:
-          description: ""
+          description: Assiged currency to the amount
+          maxLength: 3
+          minLength: 3
+          pattern: '[A-Z]{3}'
           type: string
         amount:
           format: double
-          description: ""
+          description: Amount of the guaranteed payment between buyer/seller.
           type: number
-        authorized:
-          description: ""
-          type: boolean
+        state:
+          description: |-
+            Information about the actual progressing state of the LC.
+            We differentiate between two LC states:
+            DRAFT - LC was succesfully created and is waiting to be authorized
+            ISSUED - LC was succesfully authorized. Amendments can be applyed.
+          type: string
+          x-extensible-enum:
+          - DRAFT
+          - ISSUED
         expired_at:
           format: date-time
-          description: ""
+          description: Specify the expiry date for the facility. If the limit amount
+            assigned to the facility is not utilized within the specified expiry date
+            then the Available check box will remain un-selected. This freezes the
+            line for the respective liability. ISO8601 based date format("yyyy-MM-dd'T'HH:mm:ssZ").
           type: string
       example:
-        product_type: I
-        product: ML01
+        product: I
+        commission_type: ML01
         currency: EUR
         amount: 4.0000000005E9
         expired_at: 2020-05-30T16:06:05.000Z
-        authorized: true
-    Participants:
-      title: Participants
-      description: Information of engaged trade parties.
-      required:
-      - advising_bank
-      - applicant
-      - beneficiary
-      type: object
-      properties:
-        advising_bank:
-          description: Trade party
-          maxLength: 100
-          type: string
-        beneficiary:
-          description: Trade party
-          maxLength: 100
-          type: string
-        applicant:
-          description: Trade party
-          maxLength: 100
-          type: string
-      example:
-        advising_bank: Cooperatieve Rabobank
-        beneficiary: TRADE CUST 01
-        applicant: TRADE CUST 02
-    Shipment:
-      description: Detailed location and timing information about the shipment of
-        the goods.
-      required:
-      - latest_shipment_at
-      - period
-      type: object
-      properties:
-        transferable:
-          description: |-
-            Indicates if an transferable shipment is allowed.
-            (Default: false)
-          default: false
-          type: boolean
-        partial:
-          description: "Indicates if partial shipment is allowed \r\n(Default: false)"
-          default: false
-          type: boolean
-        from:
-          description: Place of taking goods in Charge / Place of receipt
-          maxLength: 65
-          type: string
-        to:
-          description: Place of final destination / Place of delivery
-          maxLength: 65
-          type: string
-        latest_shipment_at:
-          format: date-time
-          description: "Latest point in time for the shipment. \nFormat : \"yyyy-MM-dd'T'HH:mm:ssZ\""
-          pattern: 2[0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]Z
-          type: string
-        period:
-          description: Indicates the latest shipment period
-          maxLength: 395
-          type: string
-        loading_port:
-          description: Airport of loading the goods
-          maxLength: 65
-          type: string
-        discharge_port:
-          description: Airport to discharge the goods
-          maxLength: 65
-          type: string
-      example:
-        from: Rio de Janeiro
-        to: Hamburg
-        partial: true
-        transferable: true
-        latest_shipment_at: 2020-03-30T16:06:05Z
-        period: comment ...
-    Good:
-      title: Good
-      description: Detailed list of goods that are part of the shipment with in the
-        context of the LC.
-      type: object
-      properties:
-        description:
-          maxLength: 6500
-          type: string
-        code:
-          maxLength: 12
-          type: string
-      example:
-        description: Crude oil - 2Bseen
-        code: 10 BBL
+        state: DRAFT
   headers:
     Content-Location:
       schema:
@@ -630,3 +822,5 @@ components:
 tags:
 - name: LetterOfCredit
   description: Letter Of Credit operation
+- name: Amendment
+  description: Amendment operation
